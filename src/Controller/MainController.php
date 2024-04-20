@@ -5,35 +5,71 @@ namespace App\Controller;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Cache\ItemInterface;
 
 class MainController extends AbstractController
 {
-    #[Route('/', name: 'home_page')]
+    #[Route('/', name: 'home_page', methods: ['GET'])]
     public function homePage(): Response
     {
-        $movieName = 'star wars';
-        $movieName2 = 'dumb and dumber too';
-        $movies = [$movieName, $movieName2];
-
         $client = new Client();
-        try {
-            $response = $client->request('GET', 'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1', [
-                'headers' => [
-                    'Authorization' => 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxNmNjZDFiMjllYTJlZmE5ZjI4ZGMxNzI4ZTUzMTk4YiIsInN1YiI6IjY2MWZlOGQ0MjE2MjFiMDE2NGYxMDVjYyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.SY-1BPu3v5sMTOd4GQ6BPckYXMzG5P45RR5l8d9XApA',
-                    'accept' => 'application/json',
-                ],
-            ]);
+        $cache = new FilesystemAdapter();
 
+        $page = 'page1';
 
-            //return new Response($response->getBody().results, 200);
-        } catch (GuzzleException $e) {
-            return new Response('Query failed: ' . $e, 500);
-        }
+        //caching response for increased performance/reduced TMDB calls
+        $response = $cache->get($page, function (ItemInterface $item) use ($client, $page) {
+
+            echo '<span>MISS</span>';
+
+            //expires after 20 minutes
+            $item->expiresAfter(1200);
+
+            try {
+                $response = $client->request('GET', 'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1', [
+                    'headers' => [
+                        'Authorization' => 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxNmNjZDFiMjllYTJlZmE5ZjI4ZGMxNzI4ZTUzMTk4YiIsInN1YiI6IjY2MWZlOGQ0MjE2MjFiMDE2NGYxMDVjYyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.SY-1BPu3v5sMTOd4GQ6BPckYXMzG5P45RR5l8d9XApA',
+                        'accept' => 'application/json',
+                    ],
+                ]);
+
+                $response = json_decode($response->getBody())->results;
+
+                foreach ($response as $movie) {
+
+                    $id = $movie->id;
+
+                    $tempResponse = $client->request('GET', 'https://api.themoviedb.org/3/movie/' . $id . '/credits?language=en-US', [
+                        'headers' => [
+                            'Authorization' => 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxNmNjZDFiMjllYTJlZmE5ZjI4ZGMxNzI4ZTUzMTk4YiIsInN1YiI6IjY2MWZlOGQ0MjE2MjFiMDE2NGYxMDVjYyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.SY-1BPu3v5sMTOd4GQ6BPckYXMzG5P45RR5l8d9XApA',
+                            'accept' => 'application/json',
+                        ],
+                    ]);
+
+                    $tempResponse = json_decode($tempResponse->getBody())->crew;
+
+                    //Search for the name of the director of a specific movie
+                    foreach ($tempResponse as $crewMember) {
+                        $movie->release_date = substr($movie->release_date, 0, 4);
+                        if ($crewMember->job === 'Director') {
+                            $movie->director = $crewMember->name;
+                        }
+                    }
+                }
+
+            } catch (GuzzleException $e) {
+                return new Response('Query failed: ' . $e, 500);
+            }
+
+            return $response;
+
+        });
 
         return $this->render('main/homepage.html.twig', [
-            'movies' => json_decode($response->getBody())->results,
+            'movies' => $response,
         ]);
     }
 }

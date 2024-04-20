@@ -2,15 +2,13 @@
     <span>YAMDB:</span> Yet Another Movie Database
 </h1>
 {% for movie in movies %}
-    <h2>
-        {{  movie.title }}
-    </h2>
-
-    <div class="movie_details">
-        <p>Dit is een film</p>
+    <div class="moviedetails" id="movie{{ loop.index }}">
+        <h2>
+            {{  movie.title }}
+        </h2>
+        <p>
+            {{ movie.director }}
+            {{ movie.release_date }}
+            {{ movie.overview }}</p>
     </div>
-    <p>Title
-        Director
-        Year of release
-        Short description</p>
 {% endfor %}
