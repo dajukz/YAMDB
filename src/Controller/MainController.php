@@ -20,12 +20,11 @@ class MainController extends AbstractController
 
         $page = 'page1';
 
-        //caching response for increased performance/reduced TMDB calls
-        $response = $cache->get($page, function (ItemInterface $item) use ($client, $page) {
-
+        // caching response for increased performance/reduced TMDB calls
+        $response = $cache->get($page, function (ItemInterface $item) use ($client) {
             echo '<span>MISS</span>';
 
-            //expires after 20 minutes
+            // expires after 20 minutes
             $item->expiresAfter(1200);
 
             try {
@@ -39,10 +38,9 @@ class MainController extends AbstractController
                 $response = json_decode($response->getBody())->results;
 
                 foreach ($response as $movie) {
-
                     $id = $movie->id;
 
-                    $tempResponse = $client->request('GET', 'https://api.themoviedb.org/3/movie/' . $id . '/credits?language=en-US', [
+                    $tempResponse = $client->request('GET', 'https://api.themoviedb.org/3/movie/'.$id.'/credits?language=en-US', [
                         'headers' => [
                             'Authorization' => 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxNmNjZDFiMjllYTJlZmE5ZjI4ZGMxNzI4ZTUzMTk4YiIsInN1YiI6IjY2MWZlOGQ0MjE2MjFiMDE2NGYxMDVjYyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.SY-1BPu3v5sMTOd4GQ6BPckYXMzG5P45RR5l8d9XApA',
                             'accept' => 'application/json',
@@ -51,21 +49,19 @@ class MainController extends AbstractController
 
                     $tempResponse = json_decode($tempResponse->getBody())->crew;
 
-                    //Search for the name of the director of a specific movie
+                    // Search for the name of the director of a specific movie
                     foreach ($tempResponse as $crewMember) {
                         $movie->release_date = substr($movie->release_date, 0, 4);
-                        if ($crewMember->job === 'Director') {
+                        if ('Director' === $crewMember->job) {
                             $movie->director = $crewMember->name;
                         }
                     }
                 }
-
             } catch (GuzzleException $e) {
-                return new Response('Query failed: ' . $e, 500);
+                return new Response('Query failed: '.$e, 500);
             }
 
             return $response;
-
         });
 
         return $this->render('main/homepage.html.twig', [
