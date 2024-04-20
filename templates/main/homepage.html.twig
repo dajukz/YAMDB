@@ -1,0 +1,10 @@
+<h1>
+    <span>YAMDB:</span> Yet Another Movie Database
+</h1>
+{% for post in blog_posts %}
+    <h1>
+        <a href="{{ path('home_page', {slug: post.slug}) }}">{{ post.title }}</a>
+    </h1>
+
+    <p>{{ post.excerpt }}</p>
+{% endfor %}

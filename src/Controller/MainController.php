@@ -2,16 +2,15 @@
 
 namespace App\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-class MainController
+class MainController extends AbstractController
 {
-    #[Route('/')]
-    public function homePage()
+    #[Route('/', name: 'home_page')]
+    public function homePage(): Response
     {
-        $rand = rand(0, 10);
-
-        return new Response(var_dump($rand));
+        return $this->render('main/homepage.html.twig');
     }
 }
