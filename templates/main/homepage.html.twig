@@ -3,10 +3,14 @@
 </h1>
 {% for movie in movies %}
     <h2>
-        {{  movie }}
+        {{  movie.title }}
     </h2>
 
     <div class="movie_details">
         <p>Dit is een film</p>
     </div>
+    <p>Title
+        Director
+        Year of release
+        Short description</p>
 {% endfor %}
