@@ -24,8 +24,8 @@ class MainController extends AbstractController
         $response = $cache->get($page, function (ItemInterface $item) use ($client) {
             echo '<span>MISS</span>';
 
-            // expires after 20 minutes
-            $item->expiresAfter(1200);
+            // expires after 30 minutes
+            $item->expiresAfter(1800);
 
             try {
                 $response = $client->request('GET', 'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1', [
