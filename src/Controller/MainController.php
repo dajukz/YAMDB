@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Form\SearchType;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,6 +18,7 @@ class MainController extends AbstractController
     {
         $client = new Client();
         $cache = new FilesystemAdapter();
+        $form = $this->createForm(SearchType::class);
 
         $page = 'page1';
 
@@ -66,6 +68,7 @@ class MainController extends AbstractController
 
         return $this->render('main/homepage.html.twig', [
             'movies' => $response,
+            'form' => $form
         ]);
     }
 }
