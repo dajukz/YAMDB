@@ -336,7 +336,7 @@ span {
 }
 
 .form-input{
-    width: 40vw;
+    width: 25rem;
     min-width: 200px;
     height: 55px;
     text-indent: 33px;
@@ -351,15 +351,17 @@ span {
 
 .form {
     position: relative;
-    width: 40vw;
+    width: 25rem;
     min-width: 200px;
-    padding-bottom: 1rem;
 }
 
 .temp {
-    position: fixed;
-    top: 1.5rem;
-    right: 10rem;
-    margin-bottom: 1rem;
+    display: block;
+    height: fit-content;
+    margin: 0 auto;
+}
+.temp > div {
+    display: block;
+    margin: 0 auto;
 }
 
