@@ -114,7 +114,6 @@ class AppFixtures extends Fixture
         if (($iteratorStart+100) > $this->MAX_ITERATOR) return;
 
         // fetches movies per 100 pages max
-        // TODO: change to 100
         for ($i = $iteratorStart; $i < ($iteratorStart+100); $i++) {
             $response = $this->getMovieList($client, $i+1);
             $response = json_decode($response->getBody())->results;
