@@ -39,7 +39,7 @@ class AppFixtures extends Fixture
             for ($i = 0; $i <= 5; $i++) {
 
                 $this->executeFixtureBlock($manager, $client, $i);
-
+                $manager->flush();
                 //pause after each iteration of 100 pages
                 sleep(60);
             }
