@@ -1,5 +1,6 @@
 YAMDB Application
 ========================
+# This Readme is WIP
 
 The "Yet Another Movie Database" is an application made to showcase my ability
 to learn new libraries/tools.
