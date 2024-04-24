@@ -9,6 +9,7 @@ additional_fqdns: []
 database:
     type: mysql
     version: "8.0"
+host_db_port: "33060"
 use_dns_when_possible: true
 composer_version: "2"
 web_environment: []
@@ -164,7 +165,7 @@ corepack_enable: false
 # This is not used by most people, most people use the *router* instead
 # of the localhost port.
 
-host_db_port: "33060"
+# host_db_port: "59002"
 # The host port binding for the ddev-dbserver can be explicitly specified. It is dynamic
 # unless explicitly specified.
 

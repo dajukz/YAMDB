@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Movie;
 use App\Form\SearchType;
+use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -70,5 +72,12 @@ class MainController extends AbstractController
             'movies' => $response,
             'form' => $form
         ]);
+    }
+
+    #[Route('movies', name: 'get_movies')]
+    public function test(EntityManagerInterface $entityManager)
+    {
+        $response = $entityManager->getRepository(Movie::class)->findAll();
+        echo $response;
     }
 }
