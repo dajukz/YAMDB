@@ -6,7 +6,6 @@ use App\Entity\Movie;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -17,18 +16,16 @@ class AppFixtures extends Fixture
 {
     private LoggerInterface $logger;
     private Connection $con;
-    private EntityManagerInterface $entityManager;
     private string $TMDB_API_KEY;
     private int $MAX_ITERATOR;
 
-    public function __construct(LoggerInterface $logger, Connection $con, EntityManagerInterface $entityManager)
+    public function __construct(LoggerInterface $logger, Connection $con)
     {
         $this->logger = $logger;
         $this->TMDB_API_KEY = $_ENV['TMDB_TOKEN'];
         $this->MAX_ITERATOR = 500;
         //TODO: connection $_ENV['FIXTURE_URL'] laten gebruiken
         $this->con = $con;
-        $this->entityManager = $entityManager;
 
     }
 
@@ -59,7 +56,7 @@ class AppFixtures extends Fixture
 
         } catch (Exception $exception) {
 
-            $this->logger->critical('Duplicates not removed');
+            $this->logger->critical('Duplicates not removed: ' . $exception);
 
         }
     }
