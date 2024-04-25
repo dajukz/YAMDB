@@ -92,6 +92,11 @@ class MainController extends AbstractController
     public function test(EntityManagerInterface $entityManager)
     {
         $response = $entityManager->getRepository(Movie::class)->findAll();
-        echo $response;
+        $form = $this->createForm(SearchType::class);
+
+        return $this->render('main/homepage.html.twig', [
+            'movies' => $response,
+            'form' => $form
+        ]);
     }
 }
