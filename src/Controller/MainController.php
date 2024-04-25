@@ -15,6 +15,12 @@ use Symfony\Contracts\Cache\ItemInterface;
 
 class MainController extends AbstractController
 {
+    /**
+     * Direct call to TMDB API that returns the data to the homepage view
+     *
+     * @return Response
+     * @throws \Psr\Cache\InvalidArgumentException
+     */
     #[Route('/', name: 'home_page', methods: ['GET'])]
     public function homePage(): Response
     {
@@ -32,6 +38,7 @@ class MainController extends AbstractController
             $item->expiresAfter(1800);
 
             try {
+                // get first page of most popular movies
                 $response = $client->request('GET', 'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1', [
                     'headers' => [
                         'Authorization' => 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxNmNjZDFiMjllYTJlZmE5ZjI4ZGMxNzI4ZTUzMTk4YiIsInN1YiI6IjY2MWZlOGQ0MjE2MjFiMDE2NGYxMDVjYyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.SY-1BPu3v5sMTOd4GQ6BPckYXMzG5P45RR5l8d9XApA',
@@ -41,6 +48,7 @@ class MainController extends AbstractController
 
                 $response = json_decode($response->getBody())->results;
 
+                // search the crew for each movie in response
                 foreach ($response as $movie) {
                     $id = $movie->id;
 
@@ -74,7 +82,13 @@ class MainController extends AbstractController
         ]);
     }
 
-    #[Route('movies', name: 'get_movies')]
+    /**
+     * Test function to check if the db connection works
+     *
+     * @param EntityManagerInterface $entityManager
+     * @return void
+     */
+    #[Route('test', name: 'test_movies')]
     public function test(EntityManagerInterface $entityManager)
     {
         $response = $entityManager->getRepository(Movie::class)->findAll();
