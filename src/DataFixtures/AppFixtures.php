@@ -6,24 +6,22 @@ use App\Entity\Movie;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use Doctrine\Instantiator\Exception\ExceptionInterface;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Response;
 use Psr\Log\LoggerInterface;
-use Symfony\Bridge\Doctrine\ManagerRegistry;
 
 class AppFixtures extends Fixture
 {
     private LoggerInterface $logger;
     private Connection $con;
-    private EntityManager $entityManager;
+    private EntityManagerInterface $entityManager;
     private string $TMDB_API_KEY;
     private int $MAX_ITERATOR;
 
-    public function __construct(LoggerInterface $logger, Connection $con, EntityManager $entityManager)
+    public function __construct(LoggerInterface $logger, Connection $con, EntityManagerInterface $entityManager)
     {
         $this->logger = $logger;
         $this->TMDB_API_KEY = $_ENV['TMDB_TOKEN'];
