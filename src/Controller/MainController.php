@@ -7,6 +7,7 @@ use App\Form\SearchType;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +20,7 @@ class MainController extends AbstractController
      * Direct call to TMDB API that returns the data to the homepage view
      *
      * @return Response
-     * @throws \Psr\Cache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     #[Route('/', name: 'home_page', methods: ['GET'])]
     public function homePage(): Response
@@ -86,10 +87,10 @@ class MainController extends AbstractController
      * Test function to check if the db connection works
      *
      * @param EntityManagerInterface $entityManager
-     * @return void
+     * @return Response
      */
     #[Route('test', name: 'test_movies')]
-    public function test(EntityManagerInterface $entityManager)
+    public function test(EntityManagerInterface $entityManager): Response
     {
         $response = $entityManager->getRepository(Movie::class)->findAll();
         $form = $this->createForm(SearchType::class);
