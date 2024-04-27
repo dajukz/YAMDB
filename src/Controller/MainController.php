@@ -4,12 +4,16 @@ namespace App\Controller;
 
 use App\Entity\Movie;
 use App\Form\SearchType;
+use App\Repository\MovieRepository;
+use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
+use Knp\Component\Pager\PaginatorInterface;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -19,66 +23,45 @@ class MainController extends AbstractController
     /**
      * Direct call to TMDB API that returns the data to the homepage view
      *
+     * @param $entityManager
      * @return Response
      * @throws InvalidArgumentException
      */
     #[Route('/', name: 'home_page', methods: ['GET'])]
-    public function homePage(): Response
+    public function homePage(EntityManagerInterface $entityManager, MovieRepository $movieRepository, Request $request, PaginatorInterface $paginator): Response
     {
-        $client = new Client();
         $cache = new FilesystemAdapter();
         $form = $this->createForm(SearchType::class);
 
-        $page = 'page1';
+        // cacheKey is also the page number for paginator
+        $cacheKey = $request->query->getInt('page', 1);
 
         // caching response for increased performance/reduced TMDB calls
-        $response = $cache->get($page, function (ItemInterface $item) use ($client) {
-            echo '<span>MISS</span>';
+        $pagination = $cache->get('page' . $cacheKey, function (ItemInterface $item) use ($entityManager, $paginator, $cacheKey) {
 
             // expires after 30 minutes
             $item->expiresAfter(1800);
 
             try {
-                // get first page of most popular movies
-                $response = $client->request('GET', 'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1', [
-                    'headers' => [
-                        'Authorization' => 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxNmNjZDFiMjllYTJlZmE5ZjI4ZGMxNzI4ZTUzMTk4YiIsInN1YiI6IjY2MWZlOGQ0MjE2MjFiMDE2NGYxMDVjYyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.SY-1BPu3v5sMTOd4GQ6BPckYXMzG5P45RR5l8d9XApA',
-                        'accept' => 'application/json',
-                    ],
-                ]);
 
-                $response = json_decode($response->getBody())->results;
+                //Query the movies from database
+                $response = $entityManager->getRepository(Movie::class)->getWithQueryBuilder();
+                $pagination = $paginator->paginate(
+                    $response,
+                    $cacheKey,
+                    10
+                );
+                //TODO: check of caching mogelijk is per page (van 10)
 
-                // search the crew for each movie in response
-                foreach ($response as $movie) {
-                    $id = $movie->id;
-
-                    $tempResponse = $client->request('GET', 'https://api.themoviedb.org/3/movie/'.$id.'/credits?language=en-US', [
-                        'headers' => [
-                            'Authorization' => 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxNmNjZDFiMjllYTJlZmE5ZjI4ZGMxNzI4ZTUzMTk4YiIsInN1YiI6IjY2MWZlOGQ0MjE2MjFiMDE2NGYxMDVjYyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.SY-1BPu3v5sMTOd4GQ6BPckYXMzG5P45RR5l8d9XApA',
-                            'accept' => 'application/json',
-                        ],
-                    ]);
-
-                    $tempResponse = json_decode($tempResponse->getBody())->crew;
-
-                    // Search for the name of the director of a specific movie
-                    foreach ($tempResponse as $crewMember) {
-                        $movie->release_date = substr($movie->release_date, 0, 4);
-                        if ('Director' === $crewMember->job) {
-                            $movie->director = $crewMember->name;
-                        }
-                    }
-                }
-            } catch (GuzzleException $e) {
-                return new Response('Query failed: '.$e, 500);
+            } catch (Exception | ORMException $e) {
+                return new Response('Query failed: '.$e->getMessage(), 500);
             }
 
-            return $response;
+            return $pagination;
         });
 
         return $this->render('main/homepage.html.twig', [
-            'movies' => $response,
+            'pagination' => $pagination,
             'form' => $form
         ]);
     }
@@ -89,7 +72,7 @@ class MainController extends AbstractController
      * @param EntityManagerInterface $entityManager
      * @return Response
      */
-    #[Route('test', name: 'test_movies')]
+    #[Route('/test', name: 'test_movies')]
     public function test(EntityManagerInterface $entityManager): Response
     {
         $response = $entityManager->getRepository(Movie::class)->findAll();
@@ -99,5 +82,11 @@ class MainController extends AbstractController
             'movies' => $response,
             'form' => $form
         ]);
+    }
+
+    #[Route('/movie/{id}', name: 'movie_detailed')]
+    public function showById(int $id)
+    {
+        return new Response('<h1>TEST' . $id . '</h1>');
     }
 }
