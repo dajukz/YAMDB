@@ -1,0 +1,31 @@
+<!-- table content -->
+<div class="col-sm-12 col-xxl-10">
+    <div class="bg-light rounded h-200 p-4">
+        <h5 class="mb-4"><span>YAMDB:</span> Yet Another Movie Database</h5>
+        {{ include('main/paginator.html.twig') }}
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Title</th>
+                <th scope="col">Director</th>
+                <th scope="col">Year produced</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for movie in pagination %}
+
+                <tr onclick="window.location='{{ path('movie_detailed', {id: movie.id}) }}';">
+                        <th scope="row">{{ loop.index }}</th>
+                        <td class="fw-bold">{{  movie.title }}</td>
+                        <td>{{ movie.director }}</td>
+                        <td>{{ movie.releaseDate }}</td>
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
