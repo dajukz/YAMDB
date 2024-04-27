@@ -1,6 +1,7 @@
 twig:
     file_name_pattern: '*.twig'
-
+    paths:
+        "%kernel.project_dir%/public": public_path
 when@test:
     twig:
         strict_variables: true

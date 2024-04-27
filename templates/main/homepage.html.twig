@@ -2,10 +2,7 @@
 
 {% block body %}
 
-    {% include 'main/table_with_pagination.html.twig' %}
-
-{#    {% include 'main/table.html.twig' %}#}
-
-    {% include 'main/searchbar.html.twig' %}
+    {{ include('main/table_with_pagination.html.twig') }}
+    {{ include('main/searchbar.html.twig') }}
 
 {% endblock %}

@@ -16,6 +16,21 @@
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+            <svg class="book-logo" width="5" height="5">
+                <img class="book-logo" src="{{ asset('noun-book-1055719.svg') }}" alt="logo book">
+            </svg>
+            <span class="fs-4">YAMDB</span>
+        </a>
+
+        <ul class="nav nav-pills">
+            <li class="nav-item"><a
+                        href="{{ path('home_page') }}"
+                        class="nav-link{% if app.request.attributes.get('_route') is same as 'home_page' %} active{% endif %}"
+                        aria-current="{% if app.current_route is same as 'home_page' %}page{% endif %}">Home</a></li>
+        </ul>
+    </header>
     <body>
         {% block body %}{% endblock %}
     </body>
