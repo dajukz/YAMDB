@@ -6,6 +6,7 @@ use App\Entity\Movie;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @extends ServiceEntityRepository<Movie>
@@ -22,34 +23,30 @@ class MovieRepository extends ServiceEntityRepository
         parent::__construct($registry, Movie::class);
     }
 
-    //    /**
-    //     * @return Movie[] Returns an array of Movie objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('m')
-    //            ->andWhere('m.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('m.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
 
-    //    public function findOneBySomeField($value): ?Movie
-    //    {
-    //        return $this->createQueryBuilder('m')
-    //            ->andWhere('m.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
-
+    /**
+     * Querybuilder that fetches all movies from db
+     * 
+     * @return QueryBuilder
+     */
     public function getWithQueryBuilder(): QueryBuilder
     {
         return $this->createQueryBuilder('movie')
             ->orderBy('movie.id');
+    }
+
+    /**
+     *  fetch a single movie with the given ID
+     *
+     * @param int $id
+     * @return Movie|Response
+     */
+    public function getMovieById(int $id): Movie|Response
+    {
+        $response = $this->find($id);
+
+        if ($response === null) return new Response('Movie with ID ' . $id . 'not found', 404);
+
+        return $response;
     }
 }
