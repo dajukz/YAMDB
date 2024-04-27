@@ -8,7 +8,6 @@ use App\Repository\MovieRepository;
 use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
-use GuzzleHttp\Client;
 use Knp\Component\Pager\PaginatorInterface;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,7 +27,12 @@ class MainController extends AbstractController
      * @throws InvalidArgumentException
      */
     #[Route('/', name: 'home_page', methods: ['GET'])]
-    public function homePage(EntityManagerInterface $entityManager, MovieRepository $movieRepository, Request $request, PaginatorInterface $paginator): Response
+    public function homePage(
+        EntityManagerInterface $entityManager,
+        MovieRepository $movieRepository,
+        Request $request,
+        PaginatorInterface $paginator
+    ): Response
     {
         $cache = new FilesystemAdapter();
         $form = $this->createForm(SearchType::class);
@@ -44,16 +48,18 @@ class MainController extends AbstractController
 
             try {
 
-                //Query the movies from database
-                $response = $entityManager->getRepository(Movie::class)->getWithQueryBuilder();
+                //create query that queries the movies from database
+                $query = $entityManager->getRepository(Movie::class)->getWithQueryBuilder();
+
+                //paginate with query
                 $pagination = $paginator->paginate(
-                    $response,
+                    $query,
                     $cacheKey,
                     10
                 );
                 //TODO: check of caching mogelijk is per page (van 10)
 
-            } catch (Exception | ORMException $e) {
+            } catch (Exception | ORMException | InvalidArgumentException $e) {
                 return new Response('Query failed: '.$e->getMessage(), 500);
             }
 
@@ -66,27 +72,28 @@ class MainController extends AbstractController
         ]);
     }
 
-    /**
-     * Test function to check if the db connection works
-     *
-     * @param EntityManagerInterface $entityManager
-     * @return Response
-     */
-    #[Route('/test', name: 'test_movies')]
-    public function test(EntityManagerInterface $entityManager): Response
-    {
-        $response = $entityManager->getRepository(Movie::class)->findAll();
-        $form = $this->createForm(SearchType::class);
-
-        return $this->render('main/homepage.html.twig', [
-            'movies' => $response,
-            'form' => $form
-        ]);
-    }
-
     #[Route('/movie/{id}', name: 'movie_detailed')]
-    public function showById(int $id)
+    public function showById(int $id, EntityManagerInterface $entityManager)
     {
-        return new Response('<h1>TEST' . $id . '</h1>');
+        $cache = new FilesystemAdapter();
+
+        try {
+            $response = $cache->get($id, function (ItemInterface $item) use ($entityManager, $id) {
+
+                //set expiry to 30min
+                $item->expiresAfter(1800);
+
+                //return movie with the specific id
+                return $entityManager->getRepository(Movie::class)->getMovieById($id);
+            });
+
+            return $this->render('main/detail_page.html.twig', [
+                'movie' => $response,
+            ]);
+
+        } catch (Exception | ORMException | InvalidArgumentException $exception) {
+
+            return new Response('Query failed: '.$exception->getMessage(), 500);
+        }
     }
 }
