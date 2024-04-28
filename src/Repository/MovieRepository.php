@@ -49,4 +49,32 @@ class MovieRepository extends ServiceEntityRepository
 
         return $response;
     }
+
+    /**
+     * Querybuilder that fetches all movies that have a title, director or overview with
+     * your specific search term added
+     *
+     * @param string $term
+     * @return QueryBuilder|Response
+     */
+    public function getMoviesWithTermQueryBuilder(string $term): QueryBuilder|Response
+    {
+
+        $queryBuilder = $this->createQueryBuilder('movie');
+        /*
+         * SELECT 'movie' FROM 'movies'
+         *      WHERE movie.title LIKE '%term%'
+         *      OR movie.director LIKE '%term%'
+         *      OR ....
+        */
+        return $queryBuilder->andWhere(
+            $queryBuilder->expr()->orX(
+                $queryBuilder->expr()->like('movie.title', ':term'),
+                $queryBuilder->expr()->like('movie.director', ':term'),
+                $queryBuilder->expr()->like('movie.overview', ':term'),
+                $queryBuilder->expr()->like('movie.release_date', ':term'),
+                /* release date is saved as string in db */
+            )
+        )->setParameter('term', '%' . $term . '%');
+    }
 }
