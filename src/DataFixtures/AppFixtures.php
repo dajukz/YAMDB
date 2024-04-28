@@ -24,7 +24,6 @@ class AppFixtures extends Fixture
         $this->logger = $logger;
         $this->TMDB_API_KEY = $_ENV['TMDB_TOKEN'];
         $this->MAX_ITERATOR = 500;
-        //TODO: connection $_ENV['FIXTURE_URL'] laten gebruiken
         $this->con = $con;
 
     }
