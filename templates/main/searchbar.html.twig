@@ -1,20 +1,17 @@
 {% block search %}
 
-<!-- search bar -->
-<div class="temp">
-    <div class="col-md-6">
-        <div class="form">
-            <i class="fa fa-search"></i>
-            <input
-                    name="{{ field_name(form.search) }}"
-                    value="{{ field_value(form.search) }}"
-                    type="search"
-                    class="form-control form-input"
-                    placeholder="Search anything...">
-            <span class="left-pan"><button name="{{ field_name(form.submit) }}" class="btn btn-light" type="submit">Search</button></span>
-            <div class="alert disabled">{{ form_errors(form) }}</div>
+    <!-- search bar -->
+    <div class="temp">
+        <div class="col-md-6">
+            {{ form_start(form, {'attr': {'action': path('search_movies'), 'method': 'GET'}}) }} {# Specify route and method for form submission #}
+            <div class="form">
+                <i class="fa fa-search"></i>
+                {{ form_widget(form.query, { 'attr': {'class': 'form-control form-input', 'placeholder': 'Search anything...'} }) }} {# Render the search input field #}
+                <span class="left-pan">{{ form_row(form.submit, {'label': 'Search', 'attr': {'class': 'btn btn-light'}}) }}</span> {# Render the submit button #}
+                <div class="alert disabled">{{ form_errors(form.query) }}</div> {# Render errors for the search field #}
+            </div>
+            {{ form_end(form) }} {# End the form #}
         </div>
     </div>
-</div>
 
 {% endblock %}
