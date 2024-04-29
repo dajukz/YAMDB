@@ -45,7 +45,7 @@ On your first start you will have to do 4 things:
 * Let ddev create all images and Container
 * Install all composer packages
 * Install all npm modules
-* Populate the database _(will take a while, [+-20min](DB-population-explanation))_
+* Populate the database _(will take a while, [+-20min](#DB-population-explanation))_
 
 ```bash
 ddev start
