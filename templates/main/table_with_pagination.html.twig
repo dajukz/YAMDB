@@ -16,7 +16,7 @@
             {% for movie in pagination %}
 
                 <tr onclick="window.location='{{ path('movie_detailed', {id: movie.id}) }}';">
-                        <th scope="row">{{ loop.index }}</th>
+                        <th scope="row">{{ movie.id }}</th>
                         <td class="fw-bold">{{  movie.title }}</td>
                         <td>{{ movie.director }}</td>
                         <td>{{ movie.releaseDate }}</td>
