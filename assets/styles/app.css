@@ -186,7 +186,7 @@ span {
     right: 15px;
     border: none;
     content: "\f107";
-    font-family: "Font Awesome 5 Free";
+    font-family: "Font Awesome 5 Free", sans-serif;
     font-weight: 900;
     transition: .5s;
 }
@@ -228,7 +228,7 @@ span {
     vertical-align: middle;
     border: none;
     content: "\f107";
-    font-family: "Font Awesome 5 Free";
+    font-family: "Font Awesome 5 Free", sans-serif;
     font-weight: 900;
     transition: .5s;
 }
@@ -250,7 +250,7 @@ span {
 }
 
 .bootstrap-datetimepicker-widget .table * {
-    border-bottom-width: 0px;
+    border-bottom-width: 0;
 }
 
 .bootstrap-datetimepicker-widget .table th {
@@ -274,7 +274,7 @@ span {
 
 /*** Testimonial ***/
 .progress .progress-bar {
-    width: 0px;
+    width: 0;
     transition: 2s;
 }
 
@@ -391,7 +391,7 @@ span {
 }
 
 .pagination > span:hover {
-    box-shadow:0px 0px 0px 1px #009CFF inset;
+    box-shadow:0 0 0 1px #009CFF inset;
     color: #757575;
     background-color: #F3F6F9;
 }
@@ -403,7 +403,7 @@ span {
 
 .pagination > span a {
     padding-block: 0.9rem;
-    padding-inline: 1.4rem;
+    padding-inline: 1.3rem;
     margin: 5px;
     color: #F3F6F9;
     background-color: #009CFF;
