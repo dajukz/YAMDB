@@ -21,7 +21,9 @@ class MainController extends AbstractController
     /**
      * Direct call to TMDB API that returns the data to the homepage view
      *
-     * @param $entityManager
+     * @param EntityManagerInterface $entityManager
+     * @param Request $request
+     * @param PaginatorInterface $paginator
      * @return Response
      * @throws InvalidArgumentException
      */
