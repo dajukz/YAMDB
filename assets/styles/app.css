@@ -384,14 +384,13 @@ span {
 .pagination > span {
     padding-block: 1rem;
     margin: 7px;
-    color: #F3F6F9;
-    background-color: #009CFF;
-    border: #009CFF 2px;
+    color: #757575;
+    background-color: #F3F6F9;
     border-radius: 5px;
 }
 
 .pagination > span:hover {
-    box-shadow:0 0 0 1px #009CFF inset;
+    box-shadow:0 0 0 0.825px #757575 inset;
     color: #757575;
     background-color: #F3F6F9;
 }
@@ -405,16 +404,23 @@ span {
     padding-block: 0.9rem;
     padding-inline: 1.3rem;
     margin: 5px;
-    color: #F3F6F9;
-    background-color: #009CFF;
+    color: #757575;
+    background-color: #F3F6F9;
 }
 
 .current {
     padding-block: 0.9rem;
     padding-inline: 1.4rem;
     margin: 5px;
-    color: #F3F6F9;
-    background-color: #009CFF;
+    color: #757575;
+    background-color: #F3F6F9;
+}
+
+.pretty-wrap {
+    text-align: justify;
+    border-top: 0.75px solid #dee2e6;
+    padding-top: 0.5rem;
+    margin-top: -0.5rem;
 }
 
 
